@@ -253,7 +253,7 @@ textarea.fi{resize:vertical;min-height:60px}
             </div>
             <div class="fg"><label class="fl">Место проведения</label><input class="fi" id="ev-place" oninput="syncMeta()"></div>
             <div class="g2">
-              <div class="fg"><label class="fl">Участников (факт)</label><input class="fi" type="number" id="ev-attendees" oninput="recalc()"></div>
+              <div class="fg"><label class="fl">👥 Участников (факт) — влияет на дашборд</label><input class="fi" type="number" id="ev-attendees" oninput="syncMeta()" style="font-weight:700;border:2px solid var(--y)"></div>
               <div class="fg"><label class="fl">Формат</label><input class="fi" id="ev-format"></div>
             </div>
             <div class="fg"><label class="fl">Ответственный</label><input class="fi" id="ev-manager" oninput="syncMeta()"></div>
@@ -265,8 +265,8 @@ textarea.fi{resize:vertical;min-height:60px}
           <div class="ch"><div class="ct">Статус</div></div>
           <div class="cb" style="display:flex;flex-direction:column;gap:7px">
             <div style="display:flex;justify-content:space-between;padding:8px 11px;background:var(--bg);border-radius:2px;font-size:12px"><span style="color:var(--g)">Зарегистрировано</span><strong id="s-reg">26</strong></div>
-            <div style="display:flex;justify-content:space-between;padding:8px 11px;background:var(--bg);border-radius:2px;font-size:12px"><span style="color:var(--g)">Явка (факт)</span><strong id="s-att">22</strong></div>
-            <div style="display:flex;justify-content:space-between;padding:8px 11px;background:var(--bg);border-radius:2px;font-size:12px"><span style="color:var(--g)">Передано лидов</span><strong id="s-leads" style="color:#1565C0">—</strong></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 11px;background:#FFFDE7;border-radius:2px;font-size:12px;border-left:3px solid var(--y)"><span style="color:var(--g)">👥 Явка (факт)</span><input class="fi" type="number" id="ev-attendees-top" style="width:70px;text-align:right;font-weight:700;border:1px solid var(--y)" oninput="syncAttendeesFromTop()"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 11px;background:var(--bg);border-radius:2px;font-size:12px"><span style="color:var(--g)">Передано лидов</span><input class="fi" type="number" id="ev-leads" style="width:70px;text-align:right;font-weight:700;color:#1565C0" oninput="syncLeads()"></div>
             <div style="display:flex;justify-content:space-between;padding:8px 11px;background:#FFFDE7;border-radius:2px;font-size:12px;border-left:3px solid var(--y)"><span style="color:var(--g)">Сделок заключено</span><strong id="s-deals" style="color:#2E7D32">—</strong></div>
             <div style="display:flex;justify-content:space-between;padding:8px 11px;background:var(--bg);border-radius:2px;font-size:12px"><span style="color:var(--g)">Выручка</span><strong id="s-revenue" style="color:#2E7D32">—</strong></div>
           </div>
@@ -490,8 +490,8 @@ textarea.fi{resize:vertical;min-height:60px}
 <script>
 // ═══ STATE ═══
 const S={
-  event:{name:'Бизнес-завтрак «ВЭД без границ»',date:'18.03.2025',time:'09:00 – 12:00',place:'«ЛОФТлокация», Новосибирск',attendees:22,format:'Бизнес-завтрак (B2B)',manager:'Соколова А.И.',managerRole:'Специалист по рекламе',cap:25,hero_tag_city:'Новосибирск',hero_tag_date:'18 марта 2025'},
-  marketing:{registered:26,confirmed:22,expectedMin:20,expectedMax:22,newWeek:6},
+  event:{name:'Бизнес-завтрак «ВЭД без границ»',date:'18.03.2025',time:'09:00 – 12:00',place:'«ЛОФТлокация», Новосибирск',attendees:59,format:'Бизнес-завтрак (B2B)',manager:'Соколова А.И.',managerRole:'Специалист по рекламе',cap:25,hero_tag_city:'Новосибирск',hero_tag_date:'18 марта 2025'},
+  marketing:{registered:26,confirmed:22,expectedMin:20,expectedMax:22,newWeek:6,leadsTransferred:59},
   benefits:[
     {icon:'ti-award',title:'Практические кейсы',desc:'Реальные примеры оптимизации ВЭД'},
     {icon:'ti-message-circle',title:'Личная консультация',desc:'Эксперты разберут вашу ситуацию'},
@@ -511,16 +511,15 @@ const S={
     {name:'Каталоги компании',price:90,auto:true,extra:5},
   ],
   expenses:[
-    {name:'Аренда площадки',amount:25000},
-    {name:'Кейтеринг',amount:44000},
-    {name:'Фотосъёмка',amount:12000},
-    {name:'Видеосъёмка',amount:15000},
-    {name:'Рекламное продвижение',amount:18000},
-    {name:'Сувенирная продукция',amount:16500},
-    {name:'Полиграфия',amount:8000},
-    {name:'Работа подрядчиков',amount:12000},
-    {name:'Транспортные расходы',amount:22000},
-    {name:'Прочие расходы',amount:7500},
+    {name:'Аренда конференц-зала',amount:120000},
+    {name:'Кофе-брейк и фуршет',amount:220000},
+    {name:'Полиграфическая продукция',amount:30000},
+    {name:'Сувенирная продукция',amount:38000},
+    {name:'Вход в ТПП Новосибирской области',amount:5000},
+    {name:'Фото- и видеосъёмка',amount:35000},
+    {name:'Размещение рекламных статей на Infopro54',amount:93500},
+    {name:'Командировочные расходы сотрудников',amount:185000},
+    {name:'Резервный фонд',amount:63500},
   ],
   speakers:[
     {name:'Дмитрий Орлов',role:'Коммерческий директор, АРИВИСТ'},
@@ -589,7 +588,7 @@ const S={
 function totalBudget(){return S.expenses.reduce((a,e)=>a+(+e.amount||0),0)}
 function totalRevenue(){return S.contacts.filter(c=>c.s==='deal').reduce((a,c)=>a+(+c.amount||0),0)}
 function dealsCount(){return S.contacts.filter(c=>c.s==='deal').length}
-function leadsCount(){return S.contacts.length}
+function leadsCount(){return +S.marketing.leadsTransferred||0}
 
 function fmt(n){return n.toLocaleString('ru')+'₽'}
 function fmtN(n){return n.toLocaleString('ru')+' ₽'}
@@ -609,8 +608,8 @@ function recalc(){
   const conv=leads>0?Math.round(deals/leads*100):0;
 
   // status block in card
-  setText('s-att',att+' чел.');
-  setText('s-leads',leads+' чел.');
+  // s-att removed — now an editable input synced via syncAttendeesFromTop / syncMeta
+  // s-leads removed — now an editable input synced via syncLeads
   setText('s-deals',deals+' клиента');
   setText('s-revenue',fmtN(revenue));
 
@@ -651,12 +650,25 @@ function recalc(){
 function setText(id,v){const el=document.getElementById(id);if(el)el.textContent=v}
 
 // ═══ SYNC META ═══
+function syncLeads(){
+  S.marketing.leadsTransferred=+document.getElementById('ev-leads').value||0;
+  recalc();
+}
+
+function syncAttendeesFromTop(){
+  const v=document.getElementById('ev-attendees-top').value;
+  S.event.attendees=v;
+  document.getElementById('ev-attendees').value=v;
+  recalc();
+}
+
 function syncMeta(){
   S.event.name=document.getElementById('ev-name').value;
   S.event.date=document.getElementById('ev-date').value;
   S.event.time=document.getElementById('ev-time').value;
   S.event.place=document.getElementById('ev-place').value;
   S.event.attendees=document.getElementById('ev-attendees').value;
+  document.getElementById('ev-attendees-top').value=S.event.attendees;
   S.event.format=document.getElementById('ev-format').value;
   S.event.manager=document.getElementById('ev-manager').value;
   S.event.managerRole=document.getElementById('ev-managerrole').value;
@@ -1035,6 +1047,8 @@ function init(){
   document.getElementById('ev-time').value=S.event.time;
   document.getElementById('ev-place').value=S.event.place;
   document.getElementById('ev-attendees').value=S.event.attendees;
+  document.getElementById('ev-attendees-top').value=S.event.attendees;
+  document.getElementById('ev-leads').value=S.marketing.leadsTransferred;
   document.getElementById('ev-format').value=S.event.format;
   document.getElementById('ev-manager').value=S.event.manager;
   document.getElementById('ev-managerrole').value=S.event.managerRole;
